@@ -12,7 +12,7 @@ const Cart = () => {
   };
 
   const handleCheckout = () => {
-    // Integrate Stripe or other payment API
+    
     clearCart();
     navigate('/');
   };

@@ -3,7 +3,7 @@ const router = express.Router();
 const db = require('../db');
 const authMiddleware = require('../middleware/authMiddleware');
 
-// Protected route example
+
 router.get('/', authMiddleware, async (req, res) => {
   try {
     const results = await db.query('SELECT * FROM orders WHERE user_id = $1', [req.user.id]);

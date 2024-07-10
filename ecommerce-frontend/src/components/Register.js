@@ -11,7 +11,7 @@ const Register = () => {
     e.preventDefault();
     try {
       await axios.post('http://localhost:3001/api/auth/register', { username, email, password });
-      // Redirect or show success message
+      
     } catch (err) {
       console.error(err);
     }
