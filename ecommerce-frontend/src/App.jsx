@@ -11,6 +11,7 @@ import Cart from './components/Cart';
 import { AuthProvider } from './AuthContext';
 import { CartProvider } from './CartContext';
 import PrivateRoute from './components/PrivateRoute';
+import PrivateAdminRoute from './components/PrivateAdminRoute';
 
 function App() {
   return (
@@ -24,8 +25,8 @@ function App() {
               <Route path="/register" element={<Register />} />
               <Route path="/" element={<ProductList />} />
               <Route path="/products/:id" element={<ProductDetail />} />
-              <Route path="/add" element={<PrivateRoute element={AddProduct} />} />
-              <Route path="/update/:id" element={<PrivateRoute element={UpdateProduct} />} />
+              <Route path="/add" element={<PrivateAdminRoute element={AddProduct} />} />
+              <Route path="/update/:id" element={<PrivateAdminRoute element={UpdateProduct} />} />
               <Route path="/cart" element={<PrivateRoute element={Cart} />} />
             </Routes>
           </div>

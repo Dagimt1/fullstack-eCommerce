@@ -1,12 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { Table, Button, Form } from 'react-bootstrap';
+import { Table, Button, Badge } from 'react-bootstrap';
+import { CartContext } from '../CartContext';
+import { AuthContext } from '../AuthContext';
+import './styles.css'; // Import the stylesheet
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
-  const [sort, setSort] = useState('');
-  const [filter, setFilter] = useState('');
+  const { addToCart, cart } = useContext(CartContext);
+  const { auth } = useContext(AuthContext);
+  const user = auth ? JSON.parse(atob(auth.split('.')[1])) : null;
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -20,38 +24,22 @@ const ProductList = () => {
     fetchProducts();
   }, []);
 
-  const handleSortChange = (e) => {
-    setSort(e.target.value);
-    // Implement sorting logic here
-  };
-
-  const handleFilterChange = (e) => {
-    setFilter(e.target.value);
-    // Implement filtering logic here
-  };
+  const cartItemCount = cart.reduce((count, item) => count + item.quantity, 0);
 
   return (
     <div>
-      <h2>Product List</h2>
-      <Form className="mb-3">
-        <Form.Group controlId="sort">
-          <Form.Label>Sort by</Form.Label>
-          <Form.Control as="select" value={sort} onChange={handleSortChange}>
-            <option value="">Select</option>
-            <option value="name_asc">Name (A-Z)</option>
-            <option value="name_desc">Name (Z-A)</option>
-            <option value="price_asc">Price (Low to High)</option>
-            <option value="price_desc">Price (High to Low)</option>
-          </Form.Control>
-        </Form.Group>
-        <Form.Group controlId="filter" className="mt-3">
-          <Form.Label>Filter by Category</Form.Label>
-          <Form.Control type="text" value={filter} onChange={handleFilterChange} placeholder="Enter category" />
-        </Form.Group>
-      </Form>
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h2>Product List</h2>
+        <div>
+          <Link to="/cart">
+            My Cart <Badge bg="secondary">{cartItemCount}</Badge>
+          </Link>
+        </div>
+      </div>
       <Table striped bordered hover>
         <thead>
           <tr>
+            <th>Image</th>
             <th>Name</th>
             <th>Description</th>
             <th>Price</th>
@@ -63,15 +51,20 @@ const ProductList = () => {
         <tbody>
           {products.map(product => (
             <tr key={product.id}>
+              <td><img src={product.image_url} alt={product.name} className="product-image" /></td>
               <td>{product.name}</td>
               <td>{product.description}</td>
               <td>${product.price}</td>
               <td>{product.category}</td>
               <td>{product.stock}</td>
               <td>
-                <Button as={Link} to={`/products/${product.id}`} variant="info" size="sm" className="me-2">View</Button>
-                <Button as={Link} to={`/update/${product.id}`} variant="warning" size="sm" className="me-2">Edit</Button>
-                <Button variant="danger" size="sm">Delete</Button>
+                <Button onClick={() => addToCart(product)} variant="primary" size="sm" className="me-2">Add to Cart</Button>
+                {user && user.is_admin && (
+                  <>
+                    <Button as={Link} to={`/update/${product.id}`} variant="warning" size="sm" className="me-2">Edit</Button>
+                    <Button variant="danger" size="sm">Delete</Button>
+                  </>
+                )}
               </td>
             </tr>
           ))}
